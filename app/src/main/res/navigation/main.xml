@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    app:startDestination="@id/allBooks">
+
+    <fragment
+        android:id="@+id/allBooks"
+        android:name="com.example.mylibrary.AllBooksFragment"
+        android:label="Сите книги"
+        tools:layout="@layout/fragment_all_books" />
+    <fragment
+        android:id="@+id/myBooks"
+        android:name="com.example.mylibrary.MyBooksFragment"
+        android:label="Мои книги"
+        tools:layout="@layout/fragment_my_books" />
+    <fragment
+        android:id="@+id/oweBooks"
+        android:name="com.example.mylibrary.OweBooksFragment"
+        android:label="Должам книги"
+        tools:layout="@layout/fragment_owe_books" />
+</navigation>

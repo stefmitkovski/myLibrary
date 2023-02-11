@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/allBooks"
+        android:title="Сите Книги" />
+
+    <item
+        android:id="@+id/myBooks"
+        android:title="Мои Книги" />
+
+    <item
+        android:id="@+id/oweBooks"
+        android:title="Должам Книги" />
+
+</menu>
