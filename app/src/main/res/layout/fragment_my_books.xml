@@ -7,10 +7,26 @@
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/my_books_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="MY BOOKS"
+        android:text="Немаш објавено книги"
         android:layout_gravity="center"
         />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/my_books_list"
+        android:scrollbars="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/addBook"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end|bottom"
+        android:src="@drawable/baseline_add"
+        android:contentDescription="Додади книга"
+        android:layout_margin="16dp" />
 
 </FrameLayout>

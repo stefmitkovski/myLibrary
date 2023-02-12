@@ -10,6 +10,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
@@ -20,10 +22,15 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.ArrayList;
+
 public class AllBooksFragment extends Fragment {
 
     private DatabaseReference reference;
     private FirebaseAuth mAuth;
+    private RecyclerView mRecyclerView;
+    private myAdapter mAdapter;
+    private ArrayList<Books> books;
 
     public AllBooksFragment() {
         // Required empty public constructor
@@ -44,23 +51,36 @@ public class AllBooksFragment extends Fragment {
             startActivity(new Intent(getActivity(), CreateBookActivity.class));
         });
 
+        books = new ArrayList<>();
+
+        mRecyclerView = (RecyclerView) getView().findViewById(R.id.all_books_list);
+
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
         mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference().child("Books");
         TextView title = getActivity().findViewById(R.id.all_books_title);
-        title.setVisibility(View.INVISIBLE);
+        title.setVisibility(View.VISIBLE);
+
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChildren()) {
-                    Books book = snapshot.getValue(Books.class);
-                } else {
-                    title.setVisibility(View.VISIBLE);
+                    title.setVisibility(View.INVISIBLE);
+                    books.clear();
+                    for(DataSnapshot bookDataSnap : snapshot.getChildren()){
+                        Books book = bookDataSnap.getValue(Books.class);
+                        if(book.getStatus() == true){
+                            books.add(book);
+                        }
+                    }
                 }
+                mAdapter = new myAdapter(books, R.layout.all_books_row, getContext());
+                mRecyclerView.setAdapter(mAdapter);
             }
 
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
-
             }
         });
     }
