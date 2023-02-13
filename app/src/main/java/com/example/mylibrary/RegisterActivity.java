@@ -54,7 +54,6 @@ public class RegisterActivity extends AppCompatActivity {
                                     // Sign in success, update UI with the signed-in user's information
                                     Log.d(TAG, "createUserWithEmail:success");
                                     FirebaseUser user = mAuth.getCurrentUser();
-                                    updateUI(user);
                                 } else {
                                     // If sign in fails, display a message to the user.
                                     Log.w(TAG, "createUserWithEmail:failure", task.getException());
@@ -62,10 +61,17 @@ public class RegisterActivity extends AppCompatActivity {
                                             Toast.LENGTH_SHORT).show();
                                 }
                             }
-                            private void updateUI(FirebaseUser CurrentUser) {
-                                Intent intent = new Intent(view.getContext(), MainActivity.class);
-                                startActivity(intent);
-                            }
+//                            private void updateUI(FirebaseUser CurrentUser) {
+//                                double Latitude,Longitude;
+//                                Latitude = 40 + (44 - 40) * new Random().nextDouble();
+//                                Longitude = 20 + (24 - 20) * new Random().nextDouble();
+//                                Location location = new Location(CurrentUser.getEmail(),Latitude,Longitude);
+//                                Toast.makeText(RegisterActivity.this, ""+CurrentUser.getEmail(), Toast.LENGTH_SHORT).show();
+//                                reference = FirebaseDatabase.getInstance().getReference().child("Locations");
+//                                reference.push().setValue(location);
+//                                Intent intent = new Intent(view.getContext(), MainActivity.class);
+//                                startActivity(intent);
+//                            }
                         });
             }
         });

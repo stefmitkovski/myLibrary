@@ -20,7 +20,6 @@
             android:layout_height="0dp"
             android:clickable="true"
             android:focusable="true"
-            android:text="title"
             card_view:layout_constraintTop_toTopOf="@+id/relativeLayout"
             android:textSize="24sp"
             />
@@ -31,7 +30,6 @@
             android:layout_height="0dp"
             android:clickable="true"
             android:focusable="true"
-            android:text="author"
             card_view:layout_constraintTop_toBottomOf="@+id/book_title"
             android:textSize="24sp"
             />
@@ -41,7 +39,6 @@
             android:layout_height="0dp"
             android:clickable="true"
             android:focusable="true"
-            android:text="owner"
             card_view:layout_constraintTop_toBottomOf="@+id/book_author"
             android:textSize="24sp"
             />
@@ -51,7 +48,6 @@
             android:layout_height="0dp"
             android:clickable="true"
             android:focusable="true"
-            android:text="status"
             card_view:layout_constraintTop_toBottomOf="@+id/book_owner"
             android:textSize="24sp"
             />

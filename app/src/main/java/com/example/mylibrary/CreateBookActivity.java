@@ -17,7 +17,6 @@ import com.google.firebase.database.FirebaseDatabase;
 public class CreateBookActivity extends AppCompatActivity {
 
     private FirebaseAuth mAuth;
-    private FirebaseDatabase db;
     private DatabaseReference reference;
 
     @Override

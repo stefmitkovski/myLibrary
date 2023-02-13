@@ -1,6 +1,7 @@
 package com.example.mylibrary;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,10 +50,29 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.ViewHolder> {
     @Override
     public void onBindViewHolder(ViewHolder viewHolder, int i) {
         Books book = myList.get(i);
-        viewHolder.Title.setText("title: "+book.getTitle());
-        viewHolder.Author.setText("author: "+book.getAuthor());
-        viewHolder.Owner.setText("owner: "+book.getOwner());
-        viewHolder.Status.setText("status: "+book.getStatus());
+        viewHolder.Title.setText("Наслов: "+book.getTitle());
+        viewHolder.Author.setText("Автор: "+book.getAuthor());
+        viewHolder.Owner.setText("Сопственик: "+book.getOwner());
+        if(book.getStatus() == true) {
+            viewHolder.Status.setText("Статус: слободна");
+        }else{
+            viewHolder.Status.setText("Статус: позајмена");
+        }
+        viewHolder.Title.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(view.getContext(), BookInfoActivity.class);
+                intent.putExtra("title",book.getTitle());
+                intent.putExtra("author",book.getAuthor());
+                intent.putExtra("owner",book.getOwner());
+                if(book.getStatus() == true) {
+                    intent.putExtra("status", "true");
+                }else{
+                    intent.putExtra("status","false");
+                }
+                view.getContext().startActivity(intent);
+            }
+        });
     }
 
     @Override

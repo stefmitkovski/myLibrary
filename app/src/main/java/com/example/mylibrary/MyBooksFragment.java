@@ -2,17 +2,15 @@ package com.example.mylibrary;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
@@ -45,9 +43,7 @@ public class MyBooksFragment extends Fragment {
     public void onStart() {
         super.onStart();
         FloatingActionButton fab = getActivity().findViewById(R.id.addBook);
-        fab.setOnClickListener(view -> {
-            startActivity(new Intent(getActivity(), CreateBookActivity.class));
-        });
+        fab.setOnClickListener(view -> startActivity(new Intent(getActivity(), CreateBookActivity.class)));
 
         books = new ArrayList<>();
 
@@ -58,7 +54,6 @@ public class MyBooksFragment extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Books");
         TextView title = getActivity().findViewById(R.id.my_books_title);
-        title.setVisibility(View.VISIBLE);
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -73,6 +68,8 @@ public class MyBooksFragment extends Fragment {
                             books.add(book);
                         }
                     }
+                }else{
+                    title.setVisibility(View.VISIBLE);
                 }
                 mAdapter = new myAdapter(books, R.layout.all_books_row, getContext());
                 mRecyclerView.setAdapter(mAdapter);

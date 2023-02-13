@@ -27,7 +27,6 @@ import java.util.ArrayList;
 public class AllBooksFragment extends Fragment {
 
     private DatabaseReference reference;
-    private FirebaseAuth mAuth;
     private RecyclerView mRecyclerView;
     private myAdapter mAdapter;
     private ArrayList<Books> books;
@@ -57,10 +56,8 @@ public class AllBooksFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        mAuth = FirebaseAuth.getInstance();
         reference = FirebaseDatabase.getInstance().getReference().child("Books");
         TextView title = getActivity().findViewById(R.id.all_books_title);
-        title.setVisibility(View.VISIBLE);
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -74,6 +71,8 @@ public class AllBooksFragment extends Fragment {
                             books.add(book);
                         }
                     }
+                }else{
+                    title.setVisibility(View.VISIBLE);
                 }
                 mAdapter = new myAdapter(books, R.layout.all_books_row, getContext());
                 mRecyclerView.setAdapter(mAdapter);
