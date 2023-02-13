@@ -63,7 +63,6 @@ public class MyBooksFragment extends Fragment {
                     books.clear();
                     for(DataSnapshot bookDataSnap : snapshot.getChildren()){
                         Books book = bookDataSnap.getValue(Books.class);
-//                        Toast.makeText(getActivity(), ""+mAuth.getCurrentUser().getEmail(), Toast.LENGTH_SHORT).show();
                         if(mAuth.getCurrentUser().getEmail().equals(book.getOwner())) {
                             books.add(book);
                         }

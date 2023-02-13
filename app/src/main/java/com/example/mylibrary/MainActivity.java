@@ -28,7 +28,6 @@ import java.util.Random;
 public class MainActivity extends AppCompatActivity {
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,18 +47,18 @@ public class MainActivity extends AppCompatActivity {
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                boolean flag = true;
+                boolean flag = false;
                 if(snapshot.hasChildren()){
                     for(DataSnapshot locationDataSnap : snapshot.getChildren()){
                         Location location = locationDataSnap.getValue(Location.class);
                         if(location.getEmail().equals(mAuth.getCurrentUser().getEmail())){
-                            flag = false;
+                            flag = true;
                             break;
                         }
                     }
                 }
 
-                if(flag == true){
+                if(flag == false){
                     double Latitude,Longitude;
                     Latitude = 40 + (44 - 40) * new Random().nextDouble();
                     Longitude = 20 + (24 - 20) * new Random().nextDouble();
