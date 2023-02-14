@@ -53,13 +53,11 @@ public class MyBooksFragment extends Fragment {
 
         mAuth = FirebaseAuth.getInstance();
         DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Books");
-        TextView title = getActivity().findViewById(R.id.my_books_title);
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if (snapshot.hasChildren()) {
-                    title.setVisibility(View.INVISIBLE);
                     books.clear();
                     for(DataSnapshot bookDataSnap : snapshot.getChildren()){
                         Books book = bookDataSnap.getValue(Books.class);
@@ -67,8 +65,6 @@ public class MyBooksFragment extends Fragment {
                             books.add(book);
                         }
                     }
-                }else{
-                    title.setVisibility(View.VISIBLE);
                 }
                 mAdapter = new myAdapter(books, R.layout.all_books_row, getContext());
                 mRecyclerView.setAdapter(mAdapter);

@@ -1,8 +1,8 @@
 package com.example.mylibrary;
 
 public class Books {
-    String title, author, description, owner;
-    Boolean status;
+    String title, author, description, owner, borrower;
+    Boolean status, notified;
 
     public Books() {
     }
@@ -53,5 +53,21 @@ public class Books {
 
     public void setStatus(Boolean status) {
         this.status = status;
+    }
+
+    public String getBorrower() {
+        return borrower;
+    }
+
+    public void setBorrower(String borrower) {
+        this.borrower = borrower;
+    }
+
+    public Boolean getNotified() {
+        return notified;
+    }
+
+    public void setNotified(Boolean notified) {
+        this.notified = notified;
     }
 }

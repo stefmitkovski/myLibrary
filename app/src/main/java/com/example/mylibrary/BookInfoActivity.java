@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +26,6 @@ import com.google.firebase.database.ValueEventListener;
 public class BookInfoActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     DatabaseReference reference;
-    DatabaseReference lending;
     FirebaseAuth mAuth;
     GoogleMap mMap;
     Intent intent;
@@ -46,25 +46,18 @@ public class BookInfoActivity extends AppCompatActivity implements OnMapReadyCal
 
         Button button = findViewById(R.id.btn);
         button.setOnClickListener(view -> {
+            reference = FirebaseDatabase.getInstance().getReference().child("Books");
             if(button.getText().toString().equals("Позајми")){
-                reference = FirebaseDatabase.getInstance().getReference().child("Books");
-                reference.addValueEventListener(new ValueEventListener() {
+                reference.addListenerForSingleValueEvent(new ValueEventListener() {
                     @Override
                     public void onDataChange(@NonNull DataSnapshot snapshot) {
                         for(DataSnapshot bookDataSnap : snapshot.getChildren()){
                             Books book = bookDataSnap.getValue(Books.class);
                             if(book.getOwner().equals(intent.getStringExtra("owner")) &&
                                 book.getTitle().equals(intent.getStringExtra("title")) && book.getStatus()){
-                                book.setStatus(false);
-                                Lending lender = new Lending();
-                                lender.setOwner(book.getOwner());
-                                lender.setBorrower(mAuth.getCurrentUser().getEmail());
-                                lender.setBookId(bookDataSnap.getKey());
-                                lender.setNotified(false);
-
-                                lending = FirebaseDatabase.getInstance().getReference().child("Lending");
-                                lending.push().setValue(lender);
                                 bookDataSnap.getRef().child("status").setValue(false);
+                                bookDataSnap.getRef().child("notified").setValue(false);
+                                bookDataSnap.getRef().child("borrower").setValue(mAuth.getCurrentUser().getEmail());
                                 startActivity(new Intent(view.getContext(), MainActivity.class));
                             }
                         }
@@ -75,7 +68,53 @@ public class BookInfoActivity extends AppCompatActivity implements OnMapReadyCal
 
                     }
                 });
+            } else if(button.getText().toString().equals("Врати")){
+                reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot bookDataSnap : snapshot.getChildren()){
+                            Books book = bookDataSnap.getValue(Books.class);
+                            if(book.getOwner().equals(intent.getStringExtra("owner")) &&
+                                    book.getTitle().equals(intent.getStringExtra("title")) && !book.getStatus()){
+                                    bookDataSnap.getRef().child("notified").removeValue();
+                                    bookDataSnap.getRef().child("borrower").removeValue();
+                                    bookDataSnap.getRef().child("status").setValue(true);
+                                    startActivity(new Intent(view.getContext(), MainActivity.class));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }else if(button.getText().toString().equals("Избриши")){
+                reference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot bookDataSnap : snapshot.getChildren()){
+                            Books book = bookDataSnap.getValue(Books.class);
+                            if(book.getOwner().equals(mAuth.getCurrentUser().getEmail()) &&
+                                book.getBorrower() == null){
+                                Toast.makeText(BookInfoActivity.this, "Se brise", Toast.LENGTH_SHORT).show();
+//                                bookDataSnap.getRef().child("notified").removeValue();
+//                                bookDataSnap.getRef().child("borrower").removeValue();
+//                                bookDataSnap.getRef().child("status").setValue(true);
+//                                startActivity(new Intent(view.getContext(), MainActivity.class));
+                            }else{
+                                Toast.makeText(BookInfoActivity.this, "Ne se brise", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
             }
+
         });
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
