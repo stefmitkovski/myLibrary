@@ -2,9 +2,9 @@ package com.example.mylibrary;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,6 +25,7 @@ import com.google.firebase.database.ValueEventListener;
 public class BookInfoActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     DatabaseReference reference;
+    DatabaseReference lending;
     FirebaseAuth mAuth;
     GoogleMap mMap;
     Intent intent;
@@ -38,9 +39,44 @@ public class BookInfoActivity extends AppCompatActivity implements OnMapReadyCal
         ImageView back = findViewById(R.id.backButton);
         TextView toolbar_title = findViewById(R.id.titleText);
 
+        mAuth = FirebaseAuth.getInstance();
         intent = getIntent();
         toolbar_title.setText(intent.getStringExtra("title"));
         back.setOnClickListener(view -> startActivity(new Intent(view.getContext(), MainActivity.class)));
+
+        Button button = findViewById(R.id.btn);
+        button.setOnClickListener(view -> {
+            if(button.getText().toString().equals("Позајми")){
+                reference = FirebaseDatabase.getInstance().getReference().child("Books");
+                reference.addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                        for(DataSnapshot bookDataSnap : snapshot.getChildren()){
+                            Books book = bookDataSnap.getValue(Books.class);
+                            if(book.getOwner().equals(intent.getStringExtra("owner")) &&
+                                book.getTitle().equals(intent.getStringExtra("title")) && book.getStatus()){
+                                book.setStatus(false);
+                                Lending lender = new Lending();
+                                lender.setOwner(book.getOwner());
+                                lender.setBorrower(mAuth.getCurrentUser().getEmail());
+                                lender.setBookId(bookDataSnap.getKey());
+                                lender.setNotified(false);
+
+                                lending = FirebaseDatabase.getInstance().getReference().child("Lending");
+                                lending.push().setValue(lender);
+                                bookDataSnap.getRef().child("status").setValue(false);
+                                startActivity(new Intent(view.getContext(), MainActivity.class));
+                            }
+                        }
+                    }
+
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError error) {
+
+                    }
+                });
+            }
+        });
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -50,13 +86,13 @@ public class BookInfoActivity extends AppCompatActivity implements OnMapReadyCal
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.clear();
         reference = FirebaseDatabase.getInstance().getReference().child("Location");
         reference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 intent = getIntent();
                 boolean flag = false;
-                mAuth = FirebaseAuth.getInstance();
                 if(!intent.getStringExtra("owner").equals(mAuth.getCurrentUser().getEmail())){
                     flag = true;
                 } // Ако логираниот корисник и сопственикот се различни

@@ -36,11 +36,14 @@ public class BookInfoFragment extends Fragment {
         TextView title = getActivity().findViewById(R.id.book_title);
         TextView author = getActivity().findViewById(R.id.book_author);
         TextView owner = getActivity().findViewById(R.id.book_owner);
+        TextView description = getActivity().findViewById(R.id.book_description);
         TextView status = getActivity().findViewById(R.id.book_status);
 
         title.setText("Наслов: "+ intent.getStringExtra("title"));
         author.setText("Автор: "+ intent.getStringExtra("author"));
         owner.setText("Сопственик: "+intent.getStringExtra("owner"));
+        description.setText("Краток опис: " + intent.getStringExtra("description"));
+
         if(intent.getStringExtra("status").equals("true")){
             status.setText("Статус: слободна");
             btn.setText("Позајми");

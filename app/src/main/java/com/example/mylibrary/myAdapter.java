@@ -65,6 +65,7 @@ public class myAdapter extends RecyclerView.Adapter<myAdapter.ViewHolder> {
                 intent.putExtra("title",book.getTitle());
                 intent.putExtra("author",book.getAuthor());
                 intent.putExtra("owner",book.getOwner());
+                intent.putExtra("description",book.getDescription());
                 if(book.getStatus() == true) {
                     intent.putExtra("status", "true");
                 }else{

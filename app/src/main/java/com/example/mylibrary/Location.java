@@ -8,15 +8,6 @@ public class Location {
     public Location() {
     }
 
-    @Override
-    public String toString() {
-        return "Location{" +
-                "email='" + email + '\'' +
-                ", latitude=" + latitude +
-                ", longitude=" + longitude +
-                '}';
-    }
-
     public Location(String email, Double latitude, Double longitude) {
         this.email = email;
         this.latitude = latitude;
