@@ -1,11 +1,12 @@
 package com.example.mylibrary;
 
+import android.content.BroadcastReceiver;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -14,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -26,7 +26,6 @@ import java.util.ArrayList;
 
 public class AllBooksFragment extends Fragment {
 
-    private DatabaseReference reference;
     private RecyclerView mRecyclerView;
     private myAdapter mAdapter;
     private ArrayList<Books> books;
@@ -45,10 +44,13 @@ public class AllBooksFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
+
         FloatingActionButton fab = getActivity().findViewById(R.id.addBook);
-        fab.setOnClickListener(view -> {
-            startActivity(new Intent(getActivity(), CreateBookActivity.class));
-        });
+        fab.setOnClickListener(view -> startActivity(new Intent(getActivity(), CreateBookActivity.class)));
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(LendingNotificationService.NOTIFY_OWNER);
+        (getActivity()).registerReceiver(MyReceiver(), filter);
 
         books = new ArrayList<>();
 
@@ -56,7 +58,9 @@ public class AllBooksFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        reference = FirebaseDatabase.getInstance().getReference().child("Books");
+        FirebaseAuth mAuth = FirebaseAuth.getInstance();
+
+        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Books");
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -65,8 +69,17 @@ public class AllBooksFragment extends Fragment {
                     books.clear();
                     for(DataSnapshot bookDataSnap : snapshot.getChildren()){
                         Books book = bookDataSnap.getValue(Books.class);
-                        if(book.getStatus() == true){
+                        if(book.getStatus()){
                             books.add(book);
+                        }else if(book.getBorrower() != null && book.getNotified() != null){
+                            if(mAuth.getCurrentUser().getEmail().equals(book.getOwner()) && !book.getNotified()){
+                                bookDataSnap.getRef().child("notified").setValue(true);
+                                Intent intent = new Intent(getContext(), LendingNotificationService.class);
+                                intent.putExtra("title", book.getTitle());
+                                intent.putExtra("author", book.getAuthor());
+                                intent.setAction(LendingNotificationService.NOTIFY_OWNER);
+                                getActivity().startService(intent);
+                            }
                         }
                     }
                 }
@@ -79,4 +92,8 @@ public class AllBooksFragment extends Fragment {
             }
         });
     }
+
+    private BroadcastReceiver MyReceiver() {
+        return null;
+    };
 }

@@ -1,17 +1,16 @@
 package com.example.mylibrary;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.navigation.NavController;
-import androidx.navigation.NavDestination;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.NavigationUI;
 
@@ -58,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
                     }
                 }
 
-                if(flag == false){
+                if(!flag){
                     double Latitude,Longitude;
                     Latitude = 40 + (44 - 40) * new Random().nextDouble();
                     Longitude = 20 + (24 - 20) * new Random().nextDouble();
@@ -82,11 +81,6 @@ public class MainActivity extends AppCompatActivity {
 
         TextView titleText = findViewById(R.id.titleText);
 
-        navController.addOnDestinationChangedListener(new NavController.OnDestinationChangedListener() {
-            @Override
-            public void onDestinationChanged(@NonNull NavController navController, @NonNull NavDestination navDestination, @Nullable Bundle bundle) {
-                titleText.setText(navDestination.getLabel());
-            }
-        });
+        navController.addOnDestinationChangedListener((navController1, navDestination, bundle) -> titleText.setText(navDestination.getLabel()));
     }
 }

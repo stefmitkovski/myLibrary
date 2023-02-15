@@ -1,6 +1,9 @@
 package com.example.mylibrary;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -16,6 +19,7 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,6 +39,10 @@ public class BookInfoActivity extends AppCompatActivity implements OnMapReadyCal
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_info);
+
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(LendingNotificationService.NOTIFY_BORROWER);
+        registerReceiver(new MyReceiver(), filter);
 
         ImageView back = findViewById(R.id.backButton);
         TextView toolbar_title = findViewById(R.id.titleText);
@@ -58,7 +66,11 @@ public class BookInfoActivity extends AppCompatActivity implements OnMapReadyCal
                                 bookDataSnap.getRef().child("status").setValue(false);
                                 bookDataSnap.getRef().child("notified").setValue(false);
                                 bookDataSnap.getRef().child("borrower").setValue(mAuth.getCurrentUser().getEmail());
-                                startActivity(new Intent(view.getContext(), MainActivity.class));
+                                Intent intent = new Intent(view.getContext(), LendingNotificationService.class);
+                                intent.putExtra("title", book.getTitle());
+                                intent.putExtra("author", book.getAuthor());
+                                intent.setAction(LendingNotificationService.NOTIFY_BORROWER);
+                                startService(intent);
                             }
                         }
                     }
@@ -97,13 +109,8 @@ public class BookInfoActivity extends AppCompatActivity implements OnMapReadyCal
                             Books book = bookDataSnap.getValue(Books.class);
                             if(book.getOwner().equals(mAuth.getCurrentUser().getEmail()) &&
                                 book.getBorrower() == null){
-                                Toast.makeText(BookInfoActivity.this, "Se brise", Toast.LENGTH_SHORT).show();
-//                                bookDataSnap.getRef().child("notified").removeValue();
-//                                bookDataSnap.getRef().child("borrower").removeValue();
-//                                bookDataSnap.getRef().child("status").setValue(true);
-//                                startActivity(new Intent(view.getContext(), MainActivity.class));
-                            }else{
-                                Toast.makeText(BookInfoActivity.this, "Ne se brise", Toast.LENGTH_SHORT).show();
+                                bookDataSnap.getRef().removeValue();
+                                startActivity(new Intent(view.getContext(), MainActivity.class));
                             }
                         }
                     }
@@ -157,5 +164,12 @@ public class BookInfoActivity extends AppCompatActivity implements OnMapReadyCal
 
             }
         });
+    }
+
+    private class MyReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            startActivity(new Intent(getBaseContext(), MainActivity.class));
+        }
     }
 }
